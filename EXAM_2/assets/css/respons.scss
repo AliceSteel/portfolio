@@ -12,12 +12,15 @@
             box-shadow: 0 57px #7E5AFF;
         }
     }
+    #news .container_sections {
+        margin: 0 40px;
+    }
     #btn_news_prev {
-        left: -40px;
+        left: -30px;
     }
 
     #btn_news_next {
-        right: -40px;
+        right: -30px;
     }
 } 
 @media screen and (max-width: 950px) {
@@ -30,13 +33,11 @@
 
     .burger_menu {
         display: block;
-
     }
 
     .pic_wrap {
         width: 90%;
         height: auto;
-
     }
 
     .side_content {
@@ -44,7 +45,6 @@
     }
 
     .contacts {
-
         padding: 90px 20px 30px;
         width: 90%;
     }

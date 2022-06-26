@@ -8,11 +8,10 @@ $(window).on('scroll', function () {
 $('.hamburger, #page_overlay, #mobile_menu a').on('click', function () {
     toggleMenu();
 })
-$('#mobile_menu a').on('click', function (e) {
+$('#mobile_menu a', '#main_menu a').on('click', function (e) {
     e.preventDefault();
     $('html, body').animate({
-        scrollTop: $($(this).attr('href')).offset().top - $('header').height()
-    }, 500)
+        scrollTop: $($(this).attr('href')).offset().top - 107}, 500)
 });
 
 function toggleMenu() {
