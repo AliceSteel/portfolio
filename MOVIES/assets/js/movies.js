@@ -1,3 +1,27 @@
+const topPanel = {
+    show: function (text, className) {
+        let panel = `<div id='panel' class="panel ${className}">${text}</div>`;
+        if (document.getElementById('panel') !== null) {
+            document.getElementById('panel').remove();
+        }
+        document.body.insertAdjacentHTML('afterbegin', panel);
+        this.hide();
+    },
+    hide: function () {
+        setTimeout(function () {
+            if (document.getElementById('panel') !== null) {
+                document.getElementById('panel').remove();
+            }
+        }, 3000);
+    },
+    error: function (text) {
+        this.show(text, 'panel_error');
+    },
+    success: function (text) {
+        this.show(text, 'panel_success');
+    }
+};
+
 const movieItem = {
     props: ["movie"],
     methods: {
@@ -11,35 +35,84 @@ const movieItem = {
     template: "#movieItem"
 }
 
+const Pagination = {
+    props: {
+        page: {
+            type: Number,
+            default: 1,
+            required: true
+        },
+        total: {
+            type: Number,
+            default: 0,
+            required: true
+        }
+    },
+    methods: {
+        goToPage(pag_num) {
+            this.$emit('goToPage', pag_num)
+        }
+    },
+    template: '#pagination'
+}
+
 const App = {
     data() {
         return {
             API_KEY: '44d6a131',
             search: '',
+            selected: ["Movie", "TV Series"],
+            select: '',
+            year: '',
             movieList: [],
             movieInfo: {},
             showModal: false,
             myMovies: [],
-            showFaves: false
+            showFaves: false,
+            totalPages: 0,
+            currPage: 1,
+            isDarkTheme: false
         }
     },
-    components: {
-        movieItem
+
+    created() {
+
+        this.myMovies = JSON.parse(localStorage.getItem('myMovies')) || []
+        if(document.cookie !== ''){
+            this.isDarkTheme = JSON.parse(document.cookie.split(`dark=`).pop())
+        }
+        if (this.isDarkTheme) {
+            document.querySelector('html').classList.add('dark');
+        }
     },
+
+    components: {
+        movieItem,
+        Pagination
+    },
+
     methods: {
         searchMovies() {
             if (this.search !== '') {
-                axios.get(`https://www.omdbapi.com/?apikey=${this.API_KEY}&s=${this.search}`)
+                axios.get(`https://www.omdbapi.com/?apikey=${this.API_KEY}&s=${this.search}&type=${this.select}&y=${this.year}&page=${this.currPage}`)
                     .then((response) => {
-                        this.movieList = response.data.Search; //after checking what we got in response
+                        if (response.data.Response === "False") {
+                            topPanel.error('Movie with entered title not found');
+                        } else {
+                            this.movieList = response.data.Search;
+                            this.totalPages = Math.ceil(response.data.totalResults / 10);
+                        }
                     })
                     .catch(function (error) {
-                        // handle error
+                        topPanel.error(`${error.code}. Try again later`)
                     })
-                    .then(function () {
-                        //always executes
-                    });
+            } else {
+                topPanel.error('Enter movie title, please!')
             }
+        },
+        goToPage(pageNum) {
+            this.currPage = pageNum;
+            this.searchMovies();
         },
         showMovieInfo() {
             this.showModal = true;
@@ -51,16 +124,11 @@ const App = {
                     this.showMovieInfo();
                 })
                 .catch(function (error) {
-                    // handle error
+                    topPanel.error(`${error.code}. Try again later`)
                 })
-                .then(function () {
-                    // always executed
-                });
 
         },
-        addFromStorage() {
-            const storageMovies = JSON.parse(localStorage.getItem('myMovies'));
-            this.myMovies = storageMovies;
+        showFav() {
             this.showFaves = true;
         },
         addToFaves(movie) {
@@ -68,14 +136,15 @@ const App = {
             if (found === undefined) {
                 movie.starred = true;
                 this.myMovies.push(movie);
-
+                topPanel.success('Added to Favorites');
             } else {
                 this.myMovies = this.myMovies.filter(item => item.imdbID !== movie.imdbID)
+                topPanel.success('Removed from Favorites!')
             }
             this.showFaves = true;
             localStorage.setItem('myMovies', JSON.stringify(this.myMovies));
-
         },
+
         movieListAddStar() {
             let arr = []; //new array of MovieList w/extra property 'starred'
             this.movieList.forEach(el => {
@@ -84,7 +153,16 @@ const App = {
                 arr.push(el);
             });
             return arr;
-
+        },
+        toggleTheme() {
+            this.isDarkTheme = !(this.isDarkTheme);
+            document.querySelector('html').classList.toggle('dark');
+            let value = JSON.stringify(this.isDarkTheme);
+            document.cookie = "dark=" + value + ";max-age=260000000;path=/";
+        },
+        widthProgressBar(index) {
+            const width = parseFloat(this.movieInfo.Ratings[index].Value) * 10 + '%';
+            return width;
         }
     }
 }
