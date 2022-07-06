@@ -22,6 +22,7 @@ const topPanel = {
     }
 };
 
+
 const movieItem = {
     props: ["movie"],
     methods: {
@@ -61,7 +62,7 @@ const App = {
         return {
             API_KEY: '44d6a131',
             search: '',
-            selected: ["Movie", "TV Series"],
+            selected: ["Movie", "Series"],
             select: '',
             year: '',
             movieList: [],
@@ -74,7 +75,6 @@ const App = {
             isDarkTheme: false
         }
     },
-
     created() {
 
         this.myMovies = JSON.parse(localStorage.getItem('myMovies')) || []
@@ -146,7 +146,7 @@ const App = {
         },
 
         movieListAddStar() {
-            let arr = []; //new array of MovieList w/extra property 'starred'
+            let arr = [];                       //new array of MovieList w/extra property 'starred'
             this.movieList.forEach(el => {
                 let findStar = this.myMovies.find(item => el.imdbID === item.imdbID)
                 el.starred = findStar !== undefined ? true : false;
@@ -166,6 +166,5 @@ const App = {
         }
     }
 }
-
 
 Vue.createApp(App).mount('#app')
