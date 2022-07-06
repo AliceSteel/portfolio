@@ -62,7 +62,6 @@ const App = {
         return {
             API_KEY: '44d6a131',
             search: '',
-            selected: ["Movie", "Series"],
             select: '',
             year: '',
             movieList: [],
