@@ -24,9 +24,7 @@
                     </svg>
                 </button>
             </div>
-
-<!-- Search form----------------------------------------------------->
-
+            <!-- Search form----------------------------------------------------->
             <div class="card mb-4">
                 <div class="card-body row ">
                     <form class="col-md-8" id="serach_form" @submit.prevent="searchMovies">
@@ -49,9 +47,10 @@
                                 <button type="submit" class="btn btn-dark">Search</button>
                                 <button type="reset" class="btn btn-dark " @click="movieList = []"><b>X</b></button>
                             </div>
+
                         </div>
                     </form>
-<!-- My Favorites button---------------------------------- -->
+                    <!-- My Favorites button---------------------------------- -->
                     <div class="col-md-4">
                         <button type="button" class="btn svg" @click="showFaves = true">
                             <svg version="1.1" xmlns="https://www.w3.org/2000/svg" width="32" height="32"
@@ -66,7 +65,7 @@
                     </div>
                 </div>
             </div>
-<!-- Favorites_ list________________________________________ -->
+            <!-- Favorites_ list________________________________________ -->
             <div class="card md-3 g-4 " v-if="showFaves">
                 <div class="card-header">
                     <h3>Favorites List</h3>
@@ -81,7 +80,7 @@
                     <button class="btn btn-dark me-md-2" type="button" @click="showFaves = false">Close</button>
                 </div>
             </div>
-<!-- Search_List _________________________________________---------->
+            <!-- Search_List _________________________________________---------->
             <div class="card md-3 g-4">
                 <div class="card-header h-100 mb-4">
                     <h3>Search Results</h3>
@@ -92,7 +91,7 @@
                     </template>
                 </div>
             </div>
-<!-- Overlay_info__________________________________________________ -->
+            <!-- Overlay_info__________________________________________________ -->
             <div class="modal_overlay" v-if="showModal">
                 <div class="myModal">
                     <div class="card mb-3" style="max-width: 640px;">

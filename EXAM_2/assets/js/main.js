@@ -177,11 +177,13 @@ function initMap() {
 
     map.addLayer(markers);
 }
-$('#load_map_link').on('click', function () {
+$('#load_map_link').on('click', function (event) {
+    event.preventDefault();
     $('#map').html('');
     initMap();
 })
 ///____Form:_____________________________________________________________
+
 const topPanel = {
     show: function (text, className) {
         let panel = `<div id='panel' class="panel ${className}">${text}</div>`;
@@ -205,6 +207,7 @@ const topPanel = {
         this.show(text, 'panel_success');
     },
 }
+
 $("#contact_form").on('submit', function (e) {
     e.preventDefault();
     let name = $("#name").val();
