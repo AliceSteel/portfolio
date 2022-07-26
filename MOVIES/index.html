@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies</title>
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.min.css">
+</head>
+
+<body>
+    <h1 class="pt-4">Movies Search & Save </h1>
+    <div id="app">
+        <div class="container pt-4">
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-light" type="button" @click="toggleTheme()">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                        <title>change theme</title>
+                        <path
+                            d="M16 0c-8.837 0-16 7.163-16 16s7.163 16 16 16 16-7.163 16-16-7.163-16-16-16zM4 16c0-6.627 5.373-12 12-12v24c-6.627 0-12-5.373-12-12z">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <!-- Search form----------------------------------------------------->
+            <div class="card mb-4">
+                <div class="card-body row ">
+                    <form class="col-md-8" id="serach_form" @submit.prevent="searchMovies">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <input type="search" class="form-control" placeholder="Enter movie title"
+                                    v-model="search">
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" v-model="select">
+                                    <option disabled value="">Type</option>
+                                    <option value="movie">movie</option>
+                                    <option value="series">series</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="search" class="form-control" placeholder="year" v-model="year">
+                            </div>
+                            <div class="col-md-2  gap-2 d-md-flex justify-content-md-between">
+                                <button type="submit" class="btn btn-dark">Search</button>
+                                <button type="reset" class="btn btn-dark " @click="movieList = []"><b>X</b></button>
+                            </div>
+
+                        </div>
+                    </form>
+                    <!-- My Favorites button---------------------------------- -->
+                    <div class="col-md-4">
+                        <button type="button" class="btn svg" @click="showFaves = true">
+                            <svg version="1.1" xmlns="https://www.w3.org/2000/svg" width="32" height="32"
+                                viewBox="0 0 32 32">
+                                <title>Favorites</title>
+                                <path
+                                    d="M32 12.408l-11.056-1.607-4.944-10.018-4.944 10.018-11.056 1.607 8 7.798-1.889 11.011 9.889-5.199 9.889 5.199-1.889-11.011 8-7.798zM16 23.547l-6.983 3.671 1.334-7.776-5.65-5.507 7.808-1.134 3.492-7.075 3.492 7.075 7.807 1.134-5.65 5.507 1.334 7.776-6.983-3.671z">
+                                </path>
+                            </svg>
+                            My Favorites
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Favorites_ list________________________________________ -->
+            <div class="card md-3 g-4 " v-if="showFaves">
+                <div class="card-header">
+                    <h3>Favorites List</h3>
+                </div>
+                <div class="card-body row">
+                    <template v-for="movie in myMovies" :key="movie.imdbID">
+                        <movie-item :movie="movie" @get-movie="getMovieInfo" @add-to-faves="addToFaves" />
+                        <!-- movie is from name of our props, "movie" is from v-for-->
+                    </template>
+                </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button class="btn btn-dark me-md-2" type="button" @click="showFaves = false">Close</button>
+                </div>
+            </div>
+            <!-- Search_List _________________________________________---------->
+            <div class="card md-3 g-4">
+                <div class="card-header h-100 mb-4">
+                    <h3>Search Results</h3>
+                </div>
+                <div class="row row-cols-1 row-cols-md-5 g-4">
+                    <template v-for="movie in movieListAddStar()" :key="movie.imdbID">
+                        <movie-item :movie="movie" @get-movie="getMovieInfo" @add-to-faves="addToFaves" />
+                    </template>
+                </div>
+            </div>
+            <!-- Overlay_info__________________________________________________ -->
+            <div class="modal_overlay" v-if="showModal">
+                <div class="myModal">
+                    <div class="card mb-3" style="max-width: 640px;">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img :src="movieInfo.Poster" class="img-fluid rounded-start" :alt="movieInfo.Title"
+                                    v-if="movieInfo.Poster !=='N/A'">
+                                <img src="https://via.placeholder.com/440x300" :alt="movieInfo.Title"
+                                    v-else="movieInfo.Poster !=='N/A'">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ movieInfo.Title }}</h5>
+                                    <p class="card-text">{{ movieInfo.Year }}</p>
+                                    <p class="card-text"  v-if="movieInfo.Director !=='N/A'">Director: {{ movieInfo.Director }}</p>
+                                    <p class="card-text">Actors: {{ movieInfo.Actors }}</p>
+                                    <p class="card-text">Plot: {{ movieInfo.Plot }}</p>
+
+                                    <div v-if="movieInfo.imdbRating !== 'N/A'">
+                                        <p class="card-text">IMDB Rating:
+                                            {{ movieInfo.imdbRating }}</p>
+                                        <div class="progress_wrap">
+                                            <div class="progress_bar" :style="{width: this.widthProgressBar(0) }"></div>
+                                        </div>
+                                    </div>
+                                    <div v-if="movieInfo.Ratings[1] !== undefined">
+                                        <p class="card-text">{{movieInfo.Ratings[1].Source}}:
+                                            {{ movieInfo.Ratings[1].Value }}</p>
+                                        <div class="progress_wrap">
+                                            <div class="progress_bar" :style="{ width: movieInfo.Ratings[1].Value}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div v-if="movieInfo.Metascore !== 'N/A'">
+                                        <p class="card-text">{{movieInfo.Ratings[2].Source}}:
+                                            {{ movieInfo.Ratings[2].Value }}</p>
+                                        <div class="progress_wrap">
+                                            <div class="progress_bar" :style="{width: movieInfo.Metascore + '%' }">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col md-4">
+                            <button type="button" class="svg" @click="addToFaves(movieInfo)">
+                                <svg version="1.1" xmlns="https://www.w3.org/2000/svg" width="32" height="32"
+                                    viewBox="0 0 32 32">
+                                    <title>Add/Remove Favorites</title>
+                                    <path :fill="movieInfo.starred ? '#f2af29' : '#000'"
+                                        d="M32 12.408l-11.056-1.607-4.944-10.018-4.944 10.018-11.056 1.607 8 7.798-1.889 11.011 9.889-5.199 9.889 5.199-1.889-11.011 8-7.798zM16 23.547l-6.983 3.671 1.334-7.776-5.65-5.507 7.808-1.134 3.492-7.075 3.492 7.075 7.807 1.134-5.65 5.507 1.334 7.776-6.983-3.671z">
+                                    </path>
+                                </svg>
+                            </button>
+                            <button type="button" class="btn btn-dark" @click="showModal = false">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Pagination -------------------------------------------->
+        <pagination :page="currPage" :total="totalPages" @go-to-page="goToPage">
+        </pagination>
+    </div>
+
+    <!-- Components ------------------------------------------>
+
+    <template id="movieItem">
+        <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">
+            <div class="card h-100">
+                <img :src="movie.Poster" :alt="movie.Title" v-if="movie.Poster !=='N/A'">
+                <img src="https://via.placeholder.com/440x300" :alt="movie.Title" v-else="movie.Poster !=='N/A'">
+                <div class="card-body">
+                    <h5 class="card-title">{{ movie.Title }}</h5>
+                    <p class="card-text">{{ movie.Year }}</p>
+                    <button type="button" class="btn btn-dark col-sm-6"
+                        @click="getMovieInfo(movie.imdbID)">Info</button>
+                    <button type="button" class="svg col-sm-3" @click="addToFaves(movie)">
+                        <svg version="1.1" xmlns="https://www.w3.org/2000/svg" width="32" height="32"
+                            viewBox="0 0 32 32">
+                            <title>Add/Remove Favorites</title>
+                            <path :fill="movie.starred ? '#f2af29' : '#000'"
+                                d="M32 12.408l-11.056-1.607-4.944-10.018-4.944 10.018-11.056 1.607 8 7.798-1.889 11.011 9.889-5.199 9.889 5.199-1.889-11.011 8-7.798zM16 23.547l-6.983 3.671 1.334-7.776-5.65-5.507 7.808-1.134 3.492-7.075 3.492 7.075 7.807 1.134-5.65 5.507 1.334 7.776-6.983-3.671z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="pagination">
+        <nav v-if="total !== 0">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" :class="{'disabled': page === 1}">
+                    <a class="page-link" href="#" @click="goToPage(page - 1)">Previous</a>
+                </li>
+
+                <li class="page-item" v-if="page > 4">
+                    <a class="page-link" href="#" @click="goToPage(1)">1</a>
+                </li>
+                <li class="page-item disabled" v-if="page > 4">
+                    <a class="page-link" href="#">...</a>
+                </li>
+
+                <li class="page-item" v-for="p in total" :key="p" :class="{'active': p === page}">
+                    <a href="#" class="page-link" v-if="Math.abs(p - page) < 3  || p == total " @click="goToPage(p)">
+                        {{ p }}</a>
+                </li>
+
+                <li class="page-item" :class="{'disabled': page === total}">
+                    <a class="page-link" href="#" @click="goToPage(page)">Next</a>
+                </li>
+
+            </ul>
+        </nav>
+    </template>
+
+
+    <script src="assets/js/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="assets/js/movies.js"></script>
+</body>
+
+</html>

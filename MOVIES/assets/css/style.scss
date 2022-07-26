@@ -1,0 +1,138 @@
+body {
+    background-color: #d3d3d3;
+    transition: all .3s ease;
+}
+
+img {
+    width: 100%;
+    height: 100%;
+    vertical-align: top;
+    object-fit: cover;
+}
+
+.modal_overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+
+    .myModal {
+        background-color: #fff;
+        padding: 20px;
+        width: 90%;
+        max-width: 600px;
+        z-index: 101;
+        border-radius: 20px;
+    }
+}
+
+
+button.svg {
+    float: right;
+    border-color: transparent;
+    background-color: transparent;
+
+    &:hover {
+        color: #f2af29;
+        fill: #f2af29;
+        transform: scale(1.5);
+        transition: all .2s ease;
+    }
+}
+a.page-link {
+    color: #000;
+}
+.page-item.active .page-link {
+    background-color: #000;
+    border-color: rgb(119, 113, 113);
+}
+
+h1 {
+    text-align: center;
+    color: #0b090a;
+}
+
+.me-md-2 {
+    float: right;
+}
+//__Top panel:_________________________________________________
+
+.panel {
+    position: fixed;
+    width: 30%;
+    height: 100px;
+    left: 35%;
+    top: 35%;
+    padding: 20px 0;
+    font-size: 20px;
+    color:#fff;
+    text-align: center;
+    z-index: 20000;
+    font-weight: 500;
+    border-radius: 20px;
+
+    &_error {
+        background-color: rgba(255, 99, 71, 0.718);
+    }
+
+    &_success {
+        background-color: rgba(67, 62, 62, 0.8);
+    }
+}
+
+/// dark theme:___________________________________________
+.dark {
+    body {
+        background-color: #0b090a;
+        color: #DCEDFF;
+    }
+
+    .card,
+    img {
+        background-color: #222725;
+    }
+
+    .form-control,
+    .page-item,
+    a.page-link,
+    li.page-item.disabled,
+    .form-select,
+    button,
+    ::placeholder {
+        color: #DCEDFF;
+        background-color: #8F91A2;
+        border-color: #94B0DA;
+    }
+
+    h1 {
+        color: #DCEDFF;
+    }
+
+    .btn-dark,
+    .btn-light {
+        background-color: #343F3E;
+        color: #DCEDFF;
+        svg {
+            fill: #fff
+        }
+    }
+}
+.progress_wrap {
+    background-color: transparent;
+    width: 90%;
+    height: 30px;
+    border-radius: 10px;
+    border: 1px solid #000;
+    margin-bottom: 10px;
+}
+.progress_bar {
+    background-color: #f2af29;
+    height: 100%;
+    border-radius: 10px;
+}
