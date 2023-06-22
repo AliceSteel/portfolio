@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://alicesteel.github.io/05/EXAM_2/assets/sitemaps/sitemap.xml
-Host: alicesteel.github.io 
